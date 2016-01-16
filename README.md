@@ -6,9 +6,11 @@ Debian Jessie base setup.
 Role Variables
 --------------
 
+```yaml
 debian-jessie_manager_account: YOUR_MANAGER_ACCOUNT
 debian-jessie_manager_group: YOUR_MANAGER_GROUP
 debian-jessie_manager_password: YOUR_MANAGER_PASSWORD
+```
 
 Example Playbook
 ----------------
@@ -31,4 +33,4 @@ MIT
 Author Information
 ------------------
 
-Evan Nook <evan AT innonook.com>
+Evan Nook
