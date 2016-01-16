@@ -1,0 +1,2 @@
+# 每天一次網路校時
+0 0 * * * root /usr/sbin/ntpdate -s time.stdtime.gov.tw && /sbin/hwclock -w

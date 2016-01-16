@@ -1,0 +1,50 @@
+---
+- name: disable cdrom entry in sources.list
+  lineinfile: "dest=/etc/apt/sources.list regexp='^deb cdrom' state=absent"
+- name: upgrade system
+  apt: "upgrade=yes update_cache=yes"
+- name: install system packages
+  apt: "pkg={{ item }} state=latest"
+  with_items:
+    - sudo
+    - ntpdate
+
+- name: create manager group
+  group: "name={{ debian-jessie_manager_group }}"
+- name: create manager account
+  user:
+    name: "{{ debian-jessie_manager_account }}"
+    group: "{{ debian-jessie_manager_group }}"
+    shell: "/bin/bash"
+    groups: "cdrom,floppy,audio,dip,video,plugdev"
+- name: set manager password
+  shell: "echo '{{ debian-jessie_manager_account }}:{{ debian-jessie_manager_password }}' | chpasswd"
+- name: configure sudo accout list
+  lineinfile: "dest=/etc/sudoers insertafter=^root line='{{ debian-jessie_manager_account }} ALL=(ALL:ALL) NOPASSWD: ALL'"
+
+- name: check if ssh keys exist
+  local_action: "shell if [ -e ~/.ssh/id_rsa.pub ]; then echo ok; fi"
+  register: ssh_key_status
+- name: setup ssh keys
+  authorized_key:
+    user: "{{ debian-jessie_manager_account }}"
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub')  }}"
+  when: "ssh_key_status.stdout == 'ok'"
+
+- name: setup timezone
+  copy: "src=timezone dest=/etc/timezone"
+- name: setup localtime
+  shell: "cp -f /usr/share/zoneinfo/Asia/Taipei /etc/localtime"
+- name: setup ntpdate
+  copy: "src=ntpdate dest=/etc/cron.d/ntpdate owner=root group=root mode=0644"
+- name: setup grub
+  lineinfile:
+    dest: "/etc/default/grub"
+    regexp: "^GRUB_CMDLINE_LINUX="
+    line: 'GRUB_CMDLINE_LINUX="elevator=deadline"'
+    state: "present"
+- name: update grub
+  command: update-grub
+
+- name: configure ssh service
+  lineinfile: "dest=/etc/ssh/sshd_config regexp=^PermitRootLogin line='PermitRootLogin no'"
