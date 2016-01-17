@@ -1,30 +1,28 @@
 Role Name
 =========
 
-Debian Jessie base setup.
+Debian base setup.
 
 Role Variables
 --------------
 
 ```yaml
-debian-jessie_manager_account: YOUR_MANAGER_ACCOUNT
-debian-jessie_manager_group: YOUR_MANAGER_GROUP
-debian-jessie_manager_password: YOUR_MANAGER_PASSWORD
+sysbase_manager_account: YOUR_MANAGER_ACCOUNT
+sysbase_manager_group: YOUR_MANAGER_GROUP
+sysbase_manager_password: YOUR_MANAGER_PASSWORD
 ```
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
 ```yaml
 - hosts: servers
   roles:
-     - { role: evannook.debian-jessie }
+     - { role: evannook.sysbase }
   vars:
-     debian-jessie_manager_account: YOUR_MANAGER_ACCOUNT
-     debian-jessie_manager_group: YOUR_MANAGER_GROUP
-     debian-jessie_manager_password: YOUR_MANAGER_PASSWORD
+     sysbase_manager_account: YOUR_MANAGER_ACCOUNT
+     sysbase_manager_group: YOUR_MANAGER_GROUP
+     sysbase_manager_password: YOUR_MANAGER_PASSWORD
 ```
 
 License
