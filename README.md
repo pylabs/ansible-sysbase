@@ -1,7 +1,7 @@
-Role Name
-=========
+sysbase
+=======
 
-Debian base setup.
+Debian base system setup.
 
 Role Variables
 --------------
@@ -18,7 +18,7 @@ Example Playbook
 ```yaml
 - hosts: servers
   roles:
-     - { role: evannook.sysbase }
+     - role: evannook.sysbase
   vars:
      sysbase_manager_account: YOUR_MANAGER_ACCOUNT
      sysbase_manager_group: YOUR_MANAGER_GROUP
