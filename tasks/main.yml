@@ -10,24 +10,24 @@
     - ntpdate
 
 - name: create manager group
-  group: "name={{ debian-jessie_manager_group }}"
+  group: "name={{ sysbase_manager_group }}"
 - name: create manager account
   user:
-    name: "{{ debian-jessie_manager_account }}"
-    group: "{{ debian-jessie_manager_group }}"
+    name: "{{ sysbase_manager_account }}"
+    group: "{{ sysbase_manager_group }}"
     shell: "/bin/bash"
     groups: "cdrom,floppy,audio,dip,video,plugdev"
 - name: set manager password
-  shell: "echo '{{ debian-jessie_manager_account }}:{{ debian-jessie_manager_password }}' | chpasswd"
+  shell: "echo '{{ sysbase_manager_account }}:{{ sysbase_manager_password }}' | chpasswd"
 - name: configure sudo accout list
-  lineinfile: "dest=/etc/sudoers insertafter=^root line='{{ debian-jessie_manager_account }} ALL=(ALL:ALL) NOPASSWD: ALL'"
+  lineinfile: "dest=/etc/sudoers insertafter=^root line='{{ sysbase_manager_account }} ALL=(ALL:ALL) NOPASSWD: ALL'"
 
 - name: check if ssh keys exist
   local_action: "shell if [ -e ~/.ssh/id_rsa.pub ]; then echo ok; fi"
   register: ssh_key_status
 - name: setup ssh keys
   authorized_key:
-    user: "{{ debian-jessie_manager_account }}"
+    user: "{{ sysbase_manager_account }}"
     key: "{{ lookup('file', '~/.ssh/id_rsa.pub')  }}"
   when: "ssh_key_status.stdout == 'ok'"
 
