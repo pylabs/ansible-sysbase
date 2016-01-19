@@ -11,4 +11,5 @@ galaxy_info:
   galaxy_tags:
     - system
     - base
+    - debian
 dependencies: []
