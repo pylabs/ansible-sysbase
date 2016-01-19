@@ -21,6 +21,18 @@
   shell: "echo '{{ sysbase_manager_account }}:{{ sysbase_manager_password }}' | chpasswd"
 - name: configure sudo accout list
   lineinfile: "dest=/etc/sudoers insertafter=^root line='{{ sysbase_manager_account }} ALL=(ALL:ALL) NOPASSWD: ALL'"
+- name: setup sudoers config
+  lineinfile:
+    dest: "/etc/sudoers"
+    line: "#includedir /etc/sudoers.d"
+    state: "present"
+- name: configure sudo to respect ssh agent forwarding variable
+  copy:
+    src: "allow-ssh-agent-forwarding"
+    dest: "/etc/sudoers.d/allow-ssh-agent-forwarding"
+    mode: "0440"
+    owner: "root"
+    group: "root"
 
 - name: check if ssh keys exist
   local_action: "shell if [ -e ~/.ssh/id_rsa.pub ]; then echo ok; fi"
@@ -47,4 +59,4 @@
   command: update-grub
 
 - name: configure ssh service
-  lineinfile: "dest=/etc/ssh/sshd_config regexp=^PermitRootLogin line='PermitRootLogin no'"
+  lineinfile: "dest=/etc/ssh/sshd_config regexp=^PermitRootLogin line='PermitRootLogin no' state=present"
