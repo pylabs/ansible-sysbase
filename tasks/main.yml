@@ -8,6 +8,8 @@
   with_items:
     - sudo
     - ntpdate
+    - git
+    - mercurial
 
 - name: create manager group
   group: "name={{ sysbase_manager_group }}"
