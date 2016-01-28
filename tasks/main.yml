@@ -51,14 +51,19 @@
   shell: "cp -f /usr/share/zoneinfo/Asia/Taipei /etc/localtime"
 - name: setup ntpdate
   copy: "src=ntpdate dest=/etc/cron.d/ntpdate owner=root group=root mode=0644"
-- name: setup grub
-  lineinfile:
-    dest: "/etc/default/grub"
-    regexp: "^GRUB_CMDLINE_LINUX="
-    line: 'GRUB_CMDLINE_LINUX="elevator=deadline"'
-    state: "present"
-- name: update grub
-  command: update-grub
+- name: check if grub is used
+  stat: path=/etc/default/grub
+  register: grub_status
+- block:
+  - name: setup grub
+    lineinfile:
+      dest: "/etc/default/grub"
+      regexp: "^GRUB_CMDLINE_LINUX="
+      line: 'GRUB_CMDLINE_LINUX="elevator=deadline"'
+      state: "present"
+  - name: update grub
+    command: update-grub
+when: grub_status.stat.exists
 
 - name: configure ssh service
   lineinfile: "dest=/etc/ssh/sshd_config regexp=^PermitRootLogin line='PermitRootLogin no' state=present"
