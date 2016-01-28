@@ -63,7 +63,7 @@
       state: "present"
   - name: update grub
     command: update-grub
-when: grub_status.stat.exists
+  when: grub_status.stat.exists
 
 - name: configure ssh service
   lineinfile: "dest=/etc/ssh/sshd_config regexp=^PermitRootLogin line='PermitRootLogin no' state=present"
