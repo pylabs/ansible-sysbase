@@ -28,13 +28,6 @@
     dest: "/etc/sudoers"
     line: "#includedir /etc/sudoers.d"
     state: "present"
-- name: configure sudo to respect ssh agent forwarding variable
-  copy:
-    src: "allow-ssh-agent-forwarding"
-    dest: "/etc/sudoers.d/allow-ssh-agent-forwarding"
-    mode: "0440"
-    owner: "root"
-    group: "root"
 
 - name: check if ssh keys exist
   local_action: "shell if [ -e ~/.ssh/id_rsa.pub ]; then echo ok; fi"
