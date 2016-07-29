@@ -1,6 +1,11 @@
 ---
-- name: disable cdrom entry in sources.list
-  lineinfile: "dest=/etc/apt/sources.list regexp='^deb cdrom' state=absent"
+- name: setup apt repository
+  copy:
+    src: sources.list
+    dest: /etc/apt/sources.list
+    owner: root
+    group: root
+    mode: "0644"
 - name: upgrade system
   apt: "upgrade=yes update_cache=yes"
 - name: install system packages
