@@ -70,5 +70,25 @@
     command: update-grub
   when: grub_status.stat.exists
 
+- block:
+  - name: create swapfile
+    command: dd if=/dev/zero of=/swapfile bs=1M count=2048
+  - name: format swapfile
+    command: mkswap /swapfile
+  - name: setup swapfile permission
+    file:
+      path: /swapfile
+      owner: root
+      group: root
+      mode: "0600"
+  - name: activate swapfile
+    command: swapon /swapfile
+  - name: insert swap entry in fstab
+    lineinfile:
+      dest: /etc/fstab
+      insertafter: EOF
+      line: /swapfile swap swap defaults 0 0
+  when: ansible_swaptotal_mb == 0
+
 - name: configure ssh service
   lineinfile: "dest=/etc/ssh/sshd_config regexp=^PermitRootLogin line='PermitRootLogin no' state=present"
