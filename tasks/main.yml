@@ -64,7 +64,7 @@
     lineinfile:
       dest: "/etc/default/grub"
       regexp: "^GRUB_CMDLINE_LINUX="
-      line: 'GRUB_CMDLINE_LINUX="elevator=deadline"'
+      line: 'GRUB_CMDLINE_LINUX="elevator=noop"'
       state: "present"
   - name: update grub
     command: update-grub
