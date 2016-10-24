@@ -23,7 +23,7 @@
     name: "{{ sysbase_manager_account }}"
     group: "{{ sysbase_manager_group }}"
     shell: "/bin/bash"
-    groups: "cdrom,floppy,audio,dip,video,plugdev"
+    groups: "cdrom,floppy,audio,dip,video,plugdev,netdev"
 - name: set manager password
   shell: "echo '{{ sysbase_manager_account }}:{{ sysbase_manager_password }}' | chpasswd"
 - name: configure sudo accout list
