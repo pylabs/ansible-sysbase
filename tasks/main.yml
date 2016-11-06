@@ -1,94 +1,97 @@
 ---
-- name: setup apt repository
-  copy:
-    src: sources.list
-    dest: /etc/apt/sources.list
-    owner: root
-    group: root
-    mode: "0644"
-- name: upgrade system
-  apt: "upgrade=yes update_cache=yes"
-- name: install system packages
-  apt: "name={{ item }} state=latest"
-  with_items:
-    - sudo
-    - ntpdate
-    - git
-    - mercurial
-
-- name: create manager group
-  group: "name={{ sysbase_manager_group }}"
-- name: create manager account
-  user:
-    name: "{{ sysbase_manager_account }}"
-    group: "{{ sysbase_manager_group }}"
-    shell: "/bin/bash"
-    groups: "cdrom,floppy,audio,dip,video,plugdev,netdev"
-- name: set manager password
-  shell: "echo '{{ sysbase_manager_account }}:{{ sysbase_manager_password }}' | chpasswd"
-- name: configure sudo accout list
-  lineinfile: "dest=/etc/sudoers insertafter=^root line='{{ sysbase_manager_account }} ALL=(ALL:ALL) NOPASSWD: ALL'"
-- name: setup sudoers config
-  lineinfile:
-    dest: "/etc/sudoers"
-    line: "#includedir /etc/sudoers.d"
-    state: "present"
-- name: configure sudo to respect ssh agent forwarding variable
-  copy:
-    src: "allow-ssh-agent-forwarding"
-    dest: "/etc/sudoers.d/allow-ssh-agent-forwarding"
-    mode: "0440"
-    owner: "root"
-    group: "root"
-
-- name: check if ssh keys exist
-  local_action: "shell if [ -e ~/.ssh/id_rsa.pub ]; then echo ok; fi"
-  register: ssh_key_status
-- name: setup ssh keys
-  authorized_key:
-    user: "{{ sysbase_manager_account }}"
-    key: "{{ lookup('file', '~/.ssh/id_rsa.pub')  }}"
-  when: "ssh_key_status.stdout == 'ok'"
-
-- name: setup timezone
-  copy: "src=timezone dest=/etc/timezone"
-- name: setup localtime
-  shell: "cp -f /usr/share/zoneinfo/Asia/Taipei /etc/localtime"
-- name: setup ntpdate
-  copy: "src=ntpdate dest=/etc/cron.d/ntpdate owner=root group=root mode=0644"
-- name: check if grub is used
-  stat: path=/etc/default/grub
-  register: grub_status
 - block:
-  - name: setup grub
-    lineinfile:
-      dest: "/etc/default/grub"
-      regexp: "^GRUB_CMDLINE_LINUX="
-      line: 'GRUB_CMDLINE_LINUX="elevator=noop"'
-      state: "present"
-  - name: update grub
-    command: update-grub
-  when: grub_status.stat.exists
-
-- block:
-  - name: create swapfile
-    command: dd if=/dev/zero of=/swapfile bs=1M count=2048
-  - name: format swapfile
-    command: mkswap /swapfile
-  - name: setup swapfile permission
-    file:
-      path: /swapfile
+  - name: setup apt repository
+    copy:
+      src: sources.list
+      dest: /etc/apt/sources.list
       owner: root
       group: root
-      mode: "0600"
-  - name: activate swapfile
-    command: swapon /swapfile
-  - name: insert swap entry in fstab
+      mode: "0644"
+  - name: upgrade system
+    apt: "upgrade=yes update_cache=yes"
+  - name: install system packages
+    apt: "name={{ item }} state=latest"
+    with_items:
+      - sudo
+      - ntpdate
+      - git
+      - mercurial
+  
+  - name: create manager group
+    group: "name={{ sysbase_manager_group }}"
+  - name: create manager account
+    user:
+      name: "{{ sysbase_manager_account }}"
+      group: "{{ sysbase_manager_group }}"
+      shell: "/bin/bash"
+      groups: "cdrom,floppy,audio,dip,video,plugdev,netdev"
+  - name: set manager password
+    shell: "echo '{{ sysbase_manager_account }}:{{ sysbase_manager_password }}' | chpasswd"
+  - name: configure sudo accout list
+    lineinfile: "dest=/etc/sudoers insertafter=^root line='{{ sysbase_manager_account }} ALL=(ALL:ALL) NOPASSWD: ALL'"
+  - name: setup sudoers config
     lineinfile:
-      dest: /etc/fstab
-      insertafter: EOF
-      line: /swapfile swap swap defaults 0 0
-  when: ansible_swaptotal_mb == 0
-
-- name: configure ssh service
-  lineinfile: "dest=/etc/ssh/sshd_config regexp=^PermitRootLogin line='PermitRootLogin no' state=present"
+      dest: "/etc/sudoers"
+      line: "#includedir /etc/sudoers.d"
+      state: "present"
+  - name: configure sudo to respect ssh agent forwarding variable
+    copy:
+      src: "allow-ssh-agent-forwarding"
+      dest: "/etc/sudoers.d/allow-ssh-agent-forwarding"
+      mode: "0440"
+      owner: "root"
+      group: "root"
+  
+  - name: check if ssh keys exist
+    local_action: "shell if [ -e ~/.ssh/id_rsa.pub ]; then echo ok; fi"
+    register: ssh_key_status
+  - name: setup ssh keys
+    authorized_key:
+      user: "{{ sysbase_manager_account }}"
+      key: "{{ lookup('file', '~/.ssh/id_rsa.pub')  }}"
+    when: "ssh_key_status.stdout == 'ok'"
+  
+  - name: setup timezone
+    copy: "src=timezone dest=/etc/timezone"
+  - name: setup localtime
+    shell: "cp -f /usr/share/zoneinfo/Asia/Taipei /etc/localtime"
+  - name: setup ntpdate
+    copy: "src=ntpdate dest=/etc/cron.d/ntpdate owner=root group=root mode=0644"
+  - name: check if grub is used
+    stat: path=/etc/default/grub
+    register: grub_status
+  - block:
+    - name: setup grub
+      lineinfile:
+        dest: "/etc/default/grub"
+        regexp: "^GRUB_CMDLINE_LINUX="
+        line: 'GRUB_CMDLINE_LINUX="elevator=noop"'
+        state: "present"
+    - name: update grub
+      command: update-grub
+    when: grub_status.stat.exists
+  
+  - block:
+    - name: create swapfile
+      command: dd if=/dev/zero of=/swapfile bs=1M count=2048
+    - name: format swapfile
+      command: mkswap /swapfile
+    - name: setup swapfile permission
+      file:
+        path: /swapfile
+        owner: root
+        group: root
+        mode: "0600"
+    - name: activate swapfile
+      command: swapon /swapfile
+    - name: insert swap entry in fstab
+      lineinfile:
+        dest: /etc/fstab
+        insertafter: EOF
+        line: /swapfile swap swap defaults 0 0
+    when: ansible_swaptotal_mb == 0
+  
+  - name: configure ssh service
+    lineinfile: "dest=/etc/ssh/sshd_config regexp=^PermitRootLogin line='PermitRootLogin no' state=present"
+  tags:
+    - sysbase
