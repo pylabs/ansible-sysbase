@@ -1,2 +1,5 @@
 ---
-# defaults file for debian_common
+sysbase_dns_servers:
+  - "8.8.8.8"
+  - "8.8.4.4"
+  - "168.95.1.1"
