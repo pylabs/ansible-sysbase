@@ -8,14 +8,12 @@
       group: root
       mode: "0644"
   - name: upgrade system
-    apt: "upgrade=yes update_cache=yes"
+    apt: "upgrade=yes update_cache=yes autoremove=yes"
   - name: install system packages
     apt: "name={{ item }} state=latest"
     with_items:
       - sudo
-      - ntpdate
-      - git
-      - mercurial
+      - chrony
   
   - name: create manager group
     group: "name={{ sysbase_manager_group }}"
@@ -42,21 +40,10 @@
       owner: "root"
       group: "root"
   
-  - name: check if ssh keys exist
-    local_action: "shell if [ -e ~/.ssh/id_rsa.pub ]; then echo ok; fi"
-    register: ssh_key_status
-  - name: setup ssh keys
-    authorized_key:
-      user: "{{ sysbase_manager_account }}"
-      key: "{{ lookup('file', '~/.ssh/id_rsa.pub')  }}"
-    when: "ssh_key_status.stdout == 'ok'"
-  
   - name: setup timezone
     copy: "src=timezone dest=/etc/timezone"
   - name: setup localtime
     shell: "cp -f /usr/share/zoneinfo/Asia/Taipei /etc/localtime"
-  - name: setup ntpdate
-    copy: "src=ntpdate dest=/etc/cron.d/ntpdate owner=root group=root mode=0644"
   - name: check if grub is used
     stat: path=/etc/default/grub
     register: grub_status
@@ -91,7 +78,5 @@
         line: /swapfile swap swap defaults 0 0
     when: ansible_swaptotal_mb == 0
   
-  - name: configure ssh service
-    lineinfile: "dest=/etc/ssh/sshd_config regexp=^PermitRootLogin line='PermitRootLogin no' state=present"
   tags:
     - sysbase

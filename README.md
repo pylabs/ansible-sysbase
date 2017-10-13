@@ -23,7 +23,7 @@ Example Playbook
 ```yaml
 - hosts: servers
   roles:
-     - role: evannook.sysbase
+     - role: pylabs.sysbase
   vars:
      sysbase_manager_account: john
      sysbase_manager_group: john
@@ -43,4 +43,4 @@ MIT
 Author Information
 ------------------
 
-Evan Nook
+William Wu
