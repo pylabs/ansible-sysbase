@@ -14,7 +14,6 @@
     with_items:
       - sudo
       - chrony
-  
   - name: create manager group
     group: "name={{ sysbase_manager_group }}"
   - name: create manager account
@@ -39,9 +38,20 @@
       mode: "0440"
       owner: "root"
       group: "root"
-  
+  - name: setup chrony
+    copy:
+      src: "chrony.conf"
+      dest: "/etc/chrony/chrony.conf"
+      mode: "0644"
+      owner: "root"
+      group: "root"
   - name: setup timezone
-    copy: "src=timezone dest=/etc/timezone"
+    copy:
+      src: "timezone"
+      dest: "/etc/timezone"
+      mode: "0644"
+      owner: "root"
+      group: "root"
   - name: setup localtime
     shell: "cp -f /usr/share/zoneinfo/Asia/Taipei /etc/localtime"
   - name: check if grub is used
