@@ -1,7 +1,7 @@
 galaxy_info:
-  author: Evan Nook
+  author: William Wu
   description: Setup Debian base system
-  company: InnoNook
+  company: PyLabs
   license: MIT
   min_ansible_version: 2.0
   platforms:
