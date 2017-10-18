@@ -57,6 +57,14 @@
   - name: check if grub is used
     stat: path=/etc/default/grub
     register: grub_status
+  - name: setup extra sysctl configuration
+    copy:
+      src: "99-custom.conf"
+      dest: "/etc/sysctl.d/99-custom.conf"
+      mode: "0644"
+      owner: "root"
+      group: "root"
+
   - block:
     - name: setup grub
       lineinfile:
