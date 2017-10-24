@@ -14,6 +14,7 @@
     with_items:
       - sudo
       - chrony
+      - vim-nox
   - name: purge unused packages
     apt: "name={{ item }} state=absent purge=yes"
     with_items:
