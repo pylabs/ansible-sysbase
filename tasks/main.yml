@@ -65,7 +65,13 @@
       owner: "root"
       group: "root"
   - name: setup localtime
-    command: "ln -f /usr/share/zoneinfo/Asia/Taipei /etc/localtime"
+    file:
+      src: "/usr/share/zoneinfo/Asia/Taipei"
+      dest: "/etc/localtime"
+      state: "link"
+      force: "yes"
+      owner: "root"
+      group: "root"
   - name: check if grub is used
     stat: path=/etc/default/grub
     register: grub_status
