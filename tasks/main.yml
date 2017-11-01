@@ -43,6 +43,23 @@
       mode: "0440"
       owner: "root"
       group: "root"
+  - name: activate en_US.UTF-8 locale
+    lineinfile:
+      path: "/etc/locale.gen"
+      regexp: "^# en_US.UTF-8 UTF-8$"
+      line: "en_US.UTF-8 UTF-8"
+      state: "present"
+  - name: generate locale
+    command: "locale-gen"
+  - name: setup root default locale to en_US.UTF-8
+    lineinfile:
+      path: "{{ item }}/.profile"
+      insertafter: "^#"
+      line: "export LC_ALL=en_US.UTF-8"
+      state: "present"
+    with_items:
+      - "/root"
+      - "/home/{{ sysbase_manager_account }}"
   - name: setup chrony
     copy:
       src: "chrony.conf"
