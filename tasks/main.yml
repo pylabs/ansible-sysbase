@@ -2,7 +2,7 @@
 - block:
   - name: setup apt repository
     copy:
-      src: sources.list
+      src: "sources_{{ ansible_distribution }}.list"
       dest: /etc/apt/sources.list
       owner: root
       group: root
@@ -21,21 +21,37 @@
       - rsync
   - name: create manager group
     group: "name={{ sysbase_manager_group }}"
-  - name: create manager account
+  - name: create debian manager account
     user:
       name: "{{ sysbase_manager_account }}"
       group: "{{ sysbase_manager_group }}"
       shell: "/bin/bash"
       groups: "cdrom,floppy,audio,dip,video,plugdev,netdev"
+    when: ansible_distribution == 'Debian'
+  - name: create ubuntu manager account
+    user:
+      name: "{{ sysbase_manager_account }}"
+      group: "{{ sysbase_manager_group }}"
+      shell: "/bin/bash"
+      groups: "adm,cdrom,sudo,dip,plugdev,lxd,lpadmin,sambashare"
+    when: ansible_distribution == 'Ubuntu'
   - name: set manager password
     shell: "echo '{{ sysbase_manager_account }}:{{ sysbase_manager_password }}' | chpasswd"
   - name: configure sudo accout list
     lineinfile: "dest=/etc/sudoers insertafter=^root line='{{ sysbase_manager_account }} ALL=(ALL:ALL) NOPASSWD: ALL'"
-  - name: setup sudoers config
+  - name: setup debian sudoers config
     lineinfile:
       dest: "/etc/sudoers"
       line: "#includedir /etc/sudoers.d"
       state: "present"
+    when: ansible_distribution == 'Debian'
+  - name: setup ubuntu sudoers config
+    lineinfile:
+      dest: "/etc/sudoers"
+      regexp: "^%sudo\s+"
+      line: "%sudo ALL=(ALL:ALL) NOPASSWD: ALL"
+      state: "present"
+    when: ansible_distribution == 'Ubuntu'
   - name: configure sudo to respect ssh agent forwarding variable
     copy:
       src: "allow-ssh-agent-forwarding"
@@ -68,9 +84,10 @@
       owner: "root"
       group: "root"
   - name: setup timezone
-    copy:
-      src: "timezone"
-      dest: "/etc/timezone"
+    lineinfile:
+      path: "/etc/timezone"
+      line: "Asia/Taipei"
+      state: "present"
       mode: "0644"
       owner: "root"
       group: "root"

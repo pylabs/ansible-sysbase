@@ -1,7 +1,7 @@
 sysbase
 =======
 
-Debian base system setup.
+Debian / Ubuntu base system setup.
 
 Role Variables
 --------------

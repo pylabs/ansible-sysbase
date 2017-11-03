@@ -7,9 +7,14 @@ galaxy_info:
   platforms:
   - name: Debian
     versions:
-    - stretch
+    - Stretch
+    - 9
+  - name: Ubuntu
+    - Xenial Xerus
+    - 16.04
   galaxy_tags:
     - system
     - base
     - debian
+    - ubuntu
 dependencies: []
