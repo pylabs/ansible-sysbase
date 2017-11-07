@@ -48,7 +48,7 @@
   - name: setup ubuntu sudoers config
     lineinfile:
       dest: "/etc/sudoers"
-      regexp: "^%sudo\s+"
+      regexp: '^%sudo\s+'
       line: "%sudo ALL=(ALL:ALL) NOPASSWD: ALL"
       state: "present"
     when: ansible_distribution == 'Ubuntu'
@@ -62,7 +62,7 @@
   - name: activate en_US.UTF-8 locale
     lineinfile:
       path: "/etc/locale.gen"
-      regexp: "^# en_US.UTF-8 UTF-8$"
+      regexp: '^# en_US.UTF-8 UTF-8$'
       line: "en_US.UTF-8 UTF-8"
       state: "present"
   - name: generate locale
@@ -114,7 +114,7 @@
     - name: setup grub
       lineinfile:
         dest: "/etc/default/grub"
-        regexp: "^GRUB_CMDLINE_LINUX="
+        regexp: '^GRUB_CMDLINE_LINUX='
         line: 'GRUB_CMDLINE_LINUX="elevator=noop"'
         state: "present"
     - name: update grub
