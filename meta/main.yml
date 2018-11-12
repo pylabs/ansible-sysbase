@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: sysbase
   author: William Wu
   description: Setup Debian base system
   company: PyLabs
