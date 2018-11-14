@@ -10,14 +10,16 @@
   - name: upgrade system
     apt: "upgrade=yes update_cache=yes autoremove=yes"
   - name: install system packages
-    apt: "name={{ item }} state=latest"
-    with_items:
+    apt: "name={{ packages }} state=latest"
+    vars:
+      packages:
       - sudo
       - chrony
       - vim-nox
   - name: purge unused packages
-    apt: "name={{ item }} state=absent purge=yes"
-    with_items:
+    apt: "name={{ packages }} state=absent purge=yes"
+    vars:
+      packages:
       - rsync
   - name: create manager group
     group: "name={{ sysbase_manager_group }}"
