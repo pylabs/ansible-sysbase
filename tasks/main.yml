@@ -75,7 +75,7 @@
       insertafter: "EOF"
       line: "export LC_ALL=en_US.UTF-8"
       state: "present"
-    with_items:
+    loop:
       - "/root"
       - "/home/{{ sysbase_manager_account }}"
   - name: setup chrony
