@@ -16,11 +16,6 @@
       - sudo
       - chrony
       - vim-nox
-  - name: purge unused packages
-    apt: "name={{ packages }} state=absent purge=yes"
-    vars:
-      packages:
-      - rsync
   - name: create manager group
     group: "name={{ sysbase_manager_group }}"
   - name: create debian manager account
