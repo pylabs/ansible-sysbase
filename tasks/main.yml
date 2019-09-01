@@ -7,6 +7,13 @@
       owner: root
       group: root
       mode: "0644"
+  - name: setting up dns resolver
+    copy:
+      src: "resolv.conf"
+      dest: "/etc/resolv.conf"
+      owner: "root"
+      group: "root"
+      mode: "0644"
   - name: upgrade system
     apt: "upgrade=yes update_cache=yes autoremove=yes"
   - name: install system packages
