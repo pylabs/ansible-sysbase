@@ -3,8 +3,8 @@
   - name: check target if raspbian os
     find:
       path: /etc/apt/
-      patterns: "*.list"
-      contains: raspbian
+      pattern: "*.list"
+      contains: ".+raspbian"
     register: raspbian
   - name: setup apt repository
     copy:
