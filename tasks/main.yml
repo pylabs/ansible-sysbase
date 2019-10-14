@@ -1,5 +1,10 @@
 ---
 - block:
+  - name: check target if raspbian os
+    find:
+      path: /etc/apt/sources.list
+      contains: raspbian
+    register: raspbian
   - name: setup apt repository
     copy:
       src: "sources_{{ ansible_distribution }}.list"
@@ -7,6 +12,7 @@
       owner: root
       group: root
       mode: "0644"
+    when: not raspbian.matched
   - name: setting up dns resolver
     copy:
       src: "resolv.conf"
