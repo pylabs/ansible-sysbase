@@ -2,7 +2,8 @@
 - block:
   - name: check target if raspbian os
     find:
-      path: /etc/apt/sources.list
+      path: /etc/apt/
+      patterns: "*.list"
       contains: raspbian
     register: raspbian
   - name: setup apt repository
