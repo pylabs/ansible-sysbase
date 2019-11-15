@@ -24,12 +24,12 @@
   - name: upgrade system
     apt: "upgrade=yes update_cache=yes autoremove=yes"
   - name: install system packages
-    apt: "name={{ packages }} state=latest"
-    vars:
-      packages:
-      - sudo
-      - chrony
-      - vim-nox
+    apt:
+      name:
+        - sudo
+        - chrony
+        - vim-nox
+      state: latest
   - name: create manager group
     group: "name={{ sysbase_manager_group }}"
   - name: create debian manager account
