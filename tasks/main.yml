@@ -1,11 +1,8 @@
 ---
 - block:
   - name: check target if raspbian os
-    find:
-      path: /etc/apt/
-      pattern: "*.list"
-      contains: ".+raspbian"
-    register: raspbian
+    command: "lsb_release --id"
+    register: distro_name
   - name: setup apt repository
     copy:
       src: "sources_{{ ansible_distribution }}.list"
@@ -13,7 +10,7 @@
       owner: root
       group: root
       mode: "0644"
-    when: not raspbian.matched
+    when: '("Raspbian" not in distro_name.stdout) and (not sysbase_skip_apt_repo_setup)'
   - name: setting up dns resolver
     template:
       src: "resolv.conf.j2"
