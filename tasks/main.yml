@@ -1,10 +1,10 @@
 ---
 - block:
   - name: check target if raspbian os
-    command: "lsb_release --id"
+    ansible.builtin.command: "lsb_release --id"
     register: distro_name
   - name: setup apt repository
-    copy:
+    ansible.builtin.copy:
       src: "sources_{{ ansible_distribution }}.list"
       dest: /etc/apt/sources.list
       owner: root
@@ -12,7 +12,7 @@
       mode: "0644"
     when: '("Raspbian" not in distro_name.stdout) and (not sysbase_skip_apt_repo_setup)'
   - name: setting up dns resolver
-    template:
+    ansible.builtin.template:
       src: "resolv.conf.j2"
       dest: "/etc/resolv.conf"
       owner: "root"
@@ -21,62 +21,62 @@
   - name: upgrade system
     apt: "upgrade=yes update_cache=yes autoremove=yes"
   - name: install system packages
-    apt:
+    ansible.builtin.apt:
       name:
         - sudo
         - chrony
         - vim-nox
       state: latest
   - name: create manager group
-    group: "name={{ sysbase_manager_group }}"
+    ansible.builtin.group: "name={{ sysbase_manager_group }}"
   - name: create debian manager account
-    user:
+    ansible.builtin.user:
       name: "{{ sysbase_manager_account }}"
       group: "{{ sysbase_manager_group }}"
       shell: "/bin/bash"
       groups: "cdrom,floppy,audio,dip,video,plugdev,netdev"
     when: ansible_distribution == 'Debian'
   - name: create ubuntu manager account
-    user:
+    ansible.builtin.user:
       name: "{{ sysbase_manager_account }}"
       group: "{{ sysbase_manager_group }}"
       shell: "/bin/bash"
       groups: "adm,cdrom,sudo,dip,plugdev,lxd,lpadmin,sambashare"
     when: ansible_distribution == 'Ubuntu'
   - name: set manager password
-    shell: "echo '{{ sysbase_manager_account }}:{{ sysbase_manager_password }}' | chpasswd"
+    ansible.builtin.shell: "echo '{{ sysbase_manager_account }}:{{ sysbase_manager_password }}' | chpasswd"
   - name: configure sudo accout list
-    lineinfile: "dest=/etc/sudoers insertafter=^root line='{{ sysbase_manager_account }} ALL=(ALL:ALL) NOPASSWD: ALL'"
+    ansible.builtin.lineinfile: "dest=/etc/sudoers insertafter=^root line='{{ sysbase_manager_account }} ALL=(ALL:ALL) NOPASSWD: ALL'"
   - name: setup debian sudoers config
-    lineinfile:
+    ansible.builtin.lineinfile:
       dest: "/etc/sudoers"
       line: "#includedir /etc/sudoers.d"
       state: "present"
     when: ansible_distribution == 'Debian'
   - name: setup ubuntu sudoers config
-    lineinfile:
+    ansible.builtin.lineinfile:
       dest: "/etc/sudoers"
       regexp: '^%sudo\s+'
       line: "%sudo ALL=(ALL:ALL) NOPASSWD: ALL"
       state: "present"
     when: ansible_distribution == 'Ubuntu'
   - name: configure sudo to respect ssh agent forwarding variable
-    copy:
+    ansible.builtin.copy:
       src: "allow-ssh-agent-forwarding"
       dest: "/etc/sudoers.d/allow-ssh-agent-forwarding"
       mode: "0440"
       owner: "root"
       group: "root"
   - name: activate en_US.UTF-8 locale
-    lineinfile:
+    ansible.builtin.lineinfile:
       path: "/etc/locale.gen"
       regexp: '^# en_US.UTF-8 UTF-8$'
       line: "en_US.UTF-8 UTF-8"
       state: "present"
   - name: generate locale
-    command: "locale-gen"
+    ansible.builtin.command: "locale-gen"
   - name: setup root default locale to en_US.UTF-8
-    lineinfile:
+    ansible.builtin.lineinfile:
       path: "{{ item }}/.profile"
       insertafter: "EOF"
       line: "export LC_ALL=en_US.UTF-8"
@@ -85,14 +85,14 @@
       - "/root"
       - "/home/{{ sysbase_manager_account }}"
   - name: setup chrony
-    copy:
+    ansible.builtin.copy:
       src: "chrony.conf"
       dest: "/etc/chrony/chrony.conf"
       mode: "0644"
       owner: "root"
       group: "root"
   - name: setup timezone
-    lineinfile:
+    ansible.builtin.lineinfile:
       path: "/etc/timezone"
       line: "Asia/Taipei"
       state: "present"
@@ -100,14 +100,14 @@
       owner: "root"
       group: "root"
   - name: setup extra sysctl configuration
-    copy:
+    ansible.builtin.copy:
       src: "99-custom.conf"
       dest: "/etc/sysctl.d/99-custom.conf"
       mode: "0644"
       owner: "root"
       group: "root"
   - name: setup localtime
-    file:
+    ansible.builtin.file:
       src: "/usr/share/zoneinfo/Asia/Taipei"
       dest: "/etc/localtime"
       state: "link"
@@ -115,35 +115,35 @@
       owner: "root"
       group: "root"
   - name: check if grub is used
-    stat: path=/etc/default/grub
+    ansible.builtin.stat: path=/etc/default/grub
     register: grub_status
 
   - block:
     - name: setup grub
-      lineinfile:
+      ansible.builtin.lineinfile:
         dest: "/etc/default/grub"
         regexp: '^GRUB_CMDLINE_LINUX='
         line: 'GRUB_CMDLINE_LINUX="quiet elevator=deadline"'
         state: "present"
     - name: update grub
-      command: update-grub
+      ansible.builtin.command: update-grub
     when: grub_status.stat.exists
 
   - block:
     - name: create swapfile
-      command: dd if=/dev/zero of=/swapfile bs=1M count=2048
+      ansible.builtin.command: dd if=/dev/zero of=/swapfile bs=1M count=2048
     - name: format swapfile
-      command: mkswap /swapfile
+      ansible.builtin.command: mkswap /swapfile
     - name: setup swapfile permission
-      file:
+      ansible.builtin.file:
         path: /swapfile
         owner: root
         group: root
         mode: "0600"
     - name: activate swapfile
-      command: swapon /swapfile
+      ansible.builtin.command: swapon /swapfile
     - name: insert swap entry in fstab
-      lineinfile:
+      ansible.builtin.lineinfile:
         dest: /etc/fstab
         insertafter: EOF
         line: /swapfile swap swap defaults 0 0
