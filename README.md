@@ -41,4 +41,4 @@ MIT
 Author Information
 ------------------
 
-William Wu
+William Wu <william@pylabs.org>
