@@ -10,13 +10,8 @@ galaxy_info:
     versions:
     - Bookworm
     - 11
-  - name: Ubuntu
-    versions:
-    - Focal Fossa
-    - 20.04
   galaxy_tags:
     - system
     - base
     - debian
-    - ubuntu
 dependencies: []
