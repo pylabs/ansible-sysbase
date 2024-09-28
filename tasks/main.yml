@@ -8,6 +8,8 @@
         - sudo
         - neovim
       state: latest
+  - name: setup default editor
+    ansible.builtin.command: "update-alternatives --set editor /usr/bin/nvim"
   - name: create manager group
     ansible.builtin.group: "name={{ sysbase_manager_group }}"
   - name: create debian manager account
@@ -15,39 +17,8 @@
       name: "{{ sysbase_manager_account }}"
       group: "{{ sysbase_manager_group }}"
       shell: "/bin/bash"
-      groups: "cdrom,floppy,audio,dip,video,plugdev,users,netdev"
-    when: ansible_distribution == 'Debian'
-  - name: create ubuntu manager account
-    ansible.builtin.user:
-      name: "{{ sysbase_manager_account }}"
-      group: "{{ sysbase_manager_group }}"
-      shell: "/bin/bash"
-      groups: "adm,cdrom,sudo,dip,plugdev,lxd"
-    when: ansible_distribution == 'Ubuntu'
   - name: set manager password
     ansible.builtin.shell: "echo '{{ sysbase_manager_account }}:{{ sysbase_manager_password }}' | chpasswd"
-  - name: configure sudo accout list
-    ansible.builtin.lineinfile: "dest=/etc/sudoers insertafter=^root line='{{ sysbase_manager_account }} ALL=(ALL:ALL) NOPASSWD: ALL'"
-  - name: setup debian sudoers config
-    ansible.builtin.lineinfile:
-      dest: "/etc/sudoers"
-      line: "@includedir /etc/sudoers.d"
-      state: "present"
-    when: ansible_distribution == 'Debian'
-  - name: setup ubuntu sudoers config
-    ansible.builtin.lineinfile:
-      dest: "/etc/sudoers"
-      regexp: '^%sudo\s+'
-      line: "%sudo ALL=(ALL:ALL) NOPASSWD: ALL"
-      state: "present"
-    when: ansible_distribution == 'Ubuntu'
-  - name: configure sudo to respect ssh agent forwarding variable
-    ansible.builtin.copy:
-      src: "allow-ssh-agent-forwarding"
-      dest: "/etc/sudoers.d/allow-ssh-agent-forwarding"
-      mode: "0440"
-      owner: "root"
-      group: "root"
   - name: activate en_US.UTF-8 locale
     ansible.builtin.lineinfile:
       path: "/etc/locale.gen"
@@ -66,13 +37,7 @@
       - "/root"
       - "/home/{{ sysbase_manager_account }}"
   - name: setup timezone
-    ansible.builtin.lineinfile:
-      path: "/etc/timezone"
-      line: "Asia/Taipei"
-      state: "present"
-      mode: "0644"
-      owner: "root"
-      group: "root"
+    ansible.builtin.command: "timedatectl set-timezone Asia/Taipei"
   - name: setup extra sysctl configuration
     ansible.builtin.copy:
       src: "99-custom.conf"
@@ -80,18 +45,10 @@
       mode: "0644"
       owner: "root"
       group: "root"
-  - name: setup localtime
-    ansible.builtin.file:
-      src: "/usr/share/zoneinfo/Asia/Taipei"
-      dest: "/etc/localtime"
-      state: "link"
-      force: "yes"
-      owner: "root"
-      group: "root"
+
   - name: check if grub is used
     ansible.builtin.stat: path=/etc/default/grub
     register: grub_status
-
   - block:
     - name: setup grub
       ansible.builtin.lineinfile:
