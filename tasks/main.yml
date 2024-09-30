@@ -12,7 +12,7 @@
     ansible.builtin.command: "update-alternatives --set editor /usr/bin/nvim"
   - name: create manager group
     ansible.builtin.group: "name={{ sysbase_manager_group }}"
-  - name: create debian manager account
+  - name: create manager account
     ansible.builtin.user:
       name: "{{ sysbase_manager_account }}"
       group: "{{ sysbase_manager_group }}"
@@ -59,7 +59,7 @@
         state: "present"
     - name: update grub
       ansible.builtin.command: update-grub
-    when: grub_status.stat.exists
+    when: "grub_status.stat.exists and ansible_virtualization_type != 'lxc'"
 
   - block:
     - name: create swapfile
@@ -79,7 +79,7 @@
         dest: /etc/fstab
         insertafter: EOF
         line: /swapfile swap swap defaults 0 0
-    when: ansible_swaptotal_mb == 0
+    when: "ansible_swaptotal_mb == 0 and ansible_virtualization_type != 'lxc'"
 
   tags:
     - sysbase
