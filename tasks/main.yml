@@ -17,6 +17,7 @@
       name: "{{ sysbase_manager_account }}"
       group: "{{ sysbase_manager_group }}"
       shell: "/bin/bash"
+      groups: "users"
   - name: set manager password
     ansible.builtin.shell: "echo '{{ sysbase_manager_account }}:{{ sysbase_manager_password }}' | chpasswd"
   - name: activate en_US.UTF-8 locale
