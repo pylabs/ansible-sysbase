@@ -23,22 +23,22 @@
   - name: activate en_US.UTF-8 locale
     ansible.builtin.lineinfile:
       path: "/etc/locale.gen"
-      regexp: '^# en_US.UTF-8 UTF-8$'
-      line: "en_US.UTF-8 UTF-8"
+      regexp: '^# {{ sysbase_locale }} UTF-8$'
+      line: "{{ sysbase_locale }} UTF-8"
       state: "present"
   - name: generate locale
     ansible.builtin.command: "locale-gen"
-  - name: setup root default locale to en_US.UTF-8
+  - name: setup default locale of accounts
     ansible.builtin.lineinfile:
       path: "{{ item }}/.profile"
       insertafter: "EOF"
-      line: "export LC_ALL=en_US.UTF-8"
+      line: "export LC_ALL={{ sysbase_locale }}"
       state: "present"
     loop:
       - "/root"
       - "/home/{{ sysbase_manager_account }}"
   - name: setup timezone
-    ansible.builtin.command: "timedatectl set-timezone Asia/Taipei"
+    ansible.builtin.command: "timedatectl set-timezone {{ sysbase_timezone }}"
   - name: setup extra sysctl configuration
     ansible.builtin.copy:
       src: "99-custom.conf"

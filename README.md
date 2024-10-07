@@ -13,6 +13,8 @@ sysbase_manager_password: YOUR_MANAGER_PASSWORD
 sysbase_dns_servers: (optional)
   - A LIST OF
   - DNS SERVER IP
+sysbase_timezone: YOUR_TIMEZONE_NAME
+sysbase_locale: YOUR_LOCALE_NAME
 ```
 
 Example Playbook
@@ -29,6 +31,8 @@ Example Playbook
      sysbase_dns_servers:
        - 8.8.8.8
        - 8.8.4.4
+     sysbase_timezone: Asia/Taipei
+     sysbase_locale: en_US.UTF-8
 ```
 
 License
