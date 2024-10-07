@@ -15,6 +15,7 @@ sysbase_dns_servers: (optional)
   - DNS SERVER IP
 sysbase_timezone: YOUR_TIMEZONE_NAME
 sysbase_locale: YOUR_LOCALE_NAME
+sysbase_hostname: YOUR_HOSTNAME
 ```
 
 Example Playbook
@@ -33,6 +34,7 @@ Example Playbook
        - 8.8.4.4
      sysbase_timezone: Asia/Taipei
      sysbase_locale: en_US.UTF-8
+     sysbase_hostname: foo
 ```
 
 License

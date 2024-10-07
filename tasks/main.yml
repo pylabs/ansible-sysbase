@@ -2,6 +2,8 @@
 - block:
   - name: upgrade system
     apt: "upgrade=yes update_cache=yes autoremove=yes"
+  - name: setup hostname
+    ansible.builtin.command: "hostnamectl hostname {{ sysbase_hostname }}"
   - name: install system packages
     ansible.builtin.apt:
       name:
