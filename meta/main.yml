@@ -8,8 +8,8 @@ galaxy_info:
   platforms:
   - name: Debian
     versions:
-    - Bookworm
-    - 11
+    - Trixie
+    - 13
   galaxy_tags:
     - system
     - base
